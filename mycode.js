@@ -35,11 +35,10 @@ const lockScreenHtml = `
 /* inject UI */
 document.body.insertAdjacentHTML("beforeend", lockScreenHtml);
 
-/* 🔐 FIREBASE + SUBSCRIPTION KEY LOGIC */
+/* 🔐 FIREBASE CONFIGURATION */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-/* ---------- FIREBASE CONFIG ---------- */
 const firebaseConfig = {
   apiKey: "AIzaSyCyDd6rCV7WaQe8sMF0Xmob3dpm6z6wEEQ",
   authDomain: "myapps-4a8eb.firebaseapp.com",
@@ -59,7 +58,7 @@ const activateBtn = document.getElementById("activateBtn");
 const loading = document.getElementById("loading");
 const errorMsg = document.getElementById("errorMsg");
 
-/* ---------- FORCE INVISIBLE INITIALLY ---------- */
+/* ---------- INIT ---------- */
 lockScreen.style.display = "none";
 
 /* ---------- CONTROL.JSON CHECK ---------- */
@@ -77,41 +76,29 @@ async function checkControlJson() {
     }
   } catch (err) {
     console.error("Error fetching control.json:", err);
-    // Safety: network error হলে LockScreen দেখাবে
     lockScreen.style.display = "flex";
     return true;
   }
 }
 
 /* ---------- SILENT SUBSCRIPTION CHECK ---------- */
-async function silentCheck(){
+async function silentCheck() {
   const enabled = await checkControlJson();
-  if(!enabled) return;
+  if (!enabled) return;
 
-  const savedSubscriptionKey = localStorage.getItem("subscription_key");
-
-  if(!savedSubscriptionKey){
+  const savedKey = localStorage.getItem("subscription_key");
+  if (!savedKey) {
     lockScreen.style.display = "flex";
     return;
   }
 
-  try{
-    const snap = await get(ref(db, "subscriptions/" + savedSubscriptionKey));
-
-    if(!snap.exists()){
-      localStorage.clear();
-      lockScreen.style.display = "flex";
-      return;
-    }
-
-    const sub = snap.val();
-
-    if(Date.now() > sub.expireAt || !sub.active){
+  try {
+    const snap = await get(ref(db, "subscriptions/" + savedKey));
+    if (!snap.exists() || Date.now() > snap.val().expireAt || !snap.val().active) {
       localStorage.clear();
       lockScreen.style.display = "flex";
     }
-
-  }catch(e){
+  } catch (e) {
     lockScreen.style.display = "flex";
   }
 }
@@ -119,38 +106,35 @@ async function silentCheck(){
 silentCheck();
 
 /* ---------- ACTIVATE SUBSCRIPTION ---------- */
-activateBtn.addEventListener("click", async ()=>{
+activateBtn.addEventListener("click", async () => {
   const enteredKey = document.getElementById("subscriptionInput").value.trim();
-  if(!enteredKey) return;
+  if (!enteredKey) return;
 
   activateBtn.style.display = "none";
   loading.style.display = "block";
   errorMsg.style.display = "none";
 
-  try{
+  try {
     const snapshot = await get(ref(db, "subscriptions"));
     const data = snapshot.val();
     let activated = false;
 
-    for(const id in data){
+    for (const id in data) {
       const sub = data[id];
 
-      if(sub.subscriptionKey === enteredKey){
-
-        if(!sub.active){
+      if (sub.subscriptionKey === enteredKey) {
+        if (!sub.active) {
           errorMsg.textContent = "❌ Subscription Key Already Used!";
           errorMsg.style.display = "block";
           break;
         }
-
-        if(Date.now() > sub.expireAt){
+        if (Date.now() > sub.expireAt) {
           errorMsg.textContent = "❌ Subscription Key Expired!";
           errorMsg.style.display = "block";
           break;
         }
 
-        await update(ref(db, "subscriptions/" + id), { active:false });
-
+        await update(ref(db, "subscriptions/" + id), { active: false });
         localStorage.setItem("subscription_key", id);
         lockScreen.style.display = "none";
         activated = true;
@@ -158,12 +142,11 @@ activateBtn.addEventListener("click", async ()=>{
       }
     }
 
-    if(!activated && errorMsg.style.display==="none"){
+    if (!activated && errorMsg.style.display === "none") {
       errorMsg.textContent = "❌ Invalid Subscription Key!";
       errorMsg.style.display = "block";
     }
-
-  }catch(e){
+  } catch (e) {
     alert("⚠️ Network Error!");
   }
 
@@ -171,4 +154,3 @@ activateBtn.addEventListener("click", async ()=>{
   activateBtn.style.display = "block";
 });
 </script>
-
