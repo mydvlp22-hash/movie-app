@@ -65,7 +65,7 @@ lockScreen.style.display = "none";
 /* ---------- CONTROL.JSON CHECK ---------- */
 async function checkControlJson() {
   try {
-    const response = await fetch('https://raw.githubusercontent.com/mydvlp22-hash/movie-app/refs/heads/main/control.json?time=' + Date.now());
+    const response = await fetch('https://cdn.jsdelivr.net/gh/mydvlp22-hash/movie-app@main/control.json?time=' + Date.now());
     const data = await response.json();
 
     if (!data.enabled) {
@@ -171,3 +171,4 @@ activateBtn.addEventListener("click", async ()=>{
   activateBtn.style.display = "block";
 });
 </script>
+
