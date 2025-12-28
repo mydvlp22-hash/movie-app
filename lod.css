@@ -1,0 +1,111 @@
+/* Background */
+body{
+  margin:0;
+  padding:0;
+  background:url('https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhTI6Pi-ULlrvCo12VWU_z-WZUIylOPNf0sM57b2RCSQRqG3Xor9q57tO03Fkv34FYIwFGoqExj-A6tuuLBz3eUnN_S1pnoAO0oEynrPtRFqBeQgolpJwOJreFXlTy7HBRV0chrBC_HTHYE9VpMPsW1qSxBUfCgjFccfi2eiEhah0FSUdCwuFaxsdkG19s/s1600/background.png') center/cover no-repeat;
+  min-height:100vh;
+  position:relative;
+}
+
+/* Dark Overlay */
+body::before{
+content:"";
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.65);
+z-index:1;
+}
+
+/* Popup Box */
+.updateBox{
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+width:85%;
+max-width:320px;
+background:#fff;
+padding:15px 0px;
+border-radius:18px;
+text-align:center;
+z-index:99;
+box-shadow:0 5px 25px rgba(0,0,0,0.35);
+}
+
+/* Play Icon / Logo */
+.playBtn{
+width:70px;
+height:70px;
+margin:0 auto 20px;
+display:flex;
+justify-content:center;
+align-items:center;
+position:relative;
+}
+
+/* Spinner */
+.spinner {
+border:5px solid #f3f3f3;
+border-top:5px solid #ff0000;
+border-radius:50%;
+width:50px;
+height:50px;
+animation: spin 0.5s linear infinite;
+position:absolute;
+}
+
+@keyframes spin {
+0% { transform: rotate(0deg); }
+100% { transform: rotate(360deg); }
+}
+
+/* Logo hidden initially */
+.app-icon{
+display:none;
+width:75px;
+opacity:0;
+transition: opacity 0.5s ease;
+}
+
+/* Text hidden initially */
+#siteText{
+display:none;
+margin-bottom:10px;
+font-weight:700;
+color:#000;
+}
+
+/* Button hidden initially */
+.updateButton{
+background:#ff0000;
+color:#fff;
+padding:12px 0;
+width:80%;
+margin:auto;
+display:none;
+border:none;
+border-radius:10px;
+font-size:18px;
+font-weight:600;
+cursor:pointer;
+position:relative;
+transition: opacity 0.5s ease;
+justify-content:center;
+align-items:center;
+gap:10px;
+}
+
+/* Spinner inside button */
+.button-spinner {
+border:4px solid #f3f3f3;
+border-top:4px solid #ff0000;
+border-radius:50%;
+width:22px;
+height:22px;
+animation: spin 0.5s linear infinite;
+display:none;
+vertical-align:middle;
+}
