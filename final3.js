@@ -1,6 +1,6 @@
 // final3.js
 (async function(){
-  // LockScreen UI
+  // 🔐 LockScreen UI
   const lockScreenHtml = `
   <div id="lockScreen" style="
     position:fixed; top:0; left:0;
@@ -36,22 +36,22 @@
 
   lockScreen.style.display = "none";
 
-  // Check if GitHub file exists
-  let githubExists = false;
+  // 🔗 Check if GitHub control.json exists and enabled
+  let githubEnabled = false;
   try {
-    const resp = await fetch('https://raw.githubusercontent.com/mydvlp22-hash/movie-app/main/control.json?time='+Date.now());
+    const resp = await fetch('https://raw.githubusercontent.com/mydvlp22-hash/movie-app/main/control.json?time=' + Date.now());
     if(resp.ok){
       const data = await resp.json();
-      githubExists = data.enabled; // true/false
+      githubEnabled = data.enabled; // true/false
     }
   } catch(e){
-    githubExists = false;
+    githubEnabled = false;
   }
 
-  // If GitHub file doesn't exist → skip lockscreen
-  if(!githubExists) return;
+  // If GitHub control.json is missing → skip LockScreen
+  if(!githubEnabled) return;
 
-  // Firebase setup
+  // 🔐 Firebase setup
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
@@ -70,7 +70,7 @@
 
   lockScreen.style.display = "flex";
 
-  // Silent check
+  // Silent subscription check
   async function silentCheck(){
     const savedKey = localStorage.getItem("subscription_key");
     if(!savedKey) return;
@@ -107,7 +107,7 @@
         const sub = data[id];
         if(sub.subscriptionKey === enteredKey){
           if(!sub.active){ errorMsg.textContent="❌ Already Used"; errorMsg.style.display="block"; break; }
-          if(Date.now()>sub.expireAt){ errorMsg.textContent="❌ Expired"; errorMsg.style.display="block"; break; }
+          if(Date.now() > sub.expireAt){ errorMsg.textContent="❌ Expired"; errorMsg.style.display="block"; break; }
 
           await update(ref(db, "subscriptions/"+id), {active:false});
           localStorage.setItem("subscription_key", id);
