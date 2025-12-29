@@ -1,30 +1,6 @@
-// 🔥 GLOBAL GITHUB LOCK SWITCH
-async function isLockEnabled() {
-  try {
-    const res = await fetch(
-      "https://cdn.jsdelivr.net/gh/mydvlp22-hash/movie-app@main/lock.json?ts=" + Date.now()
-    );
-    const data = await res.json();
-    return data.enabled === false;
-  } catch (e) {
-    console.log("Lock check failed, unlocking");
-    return false; // fail-safe = unlock
-  }
-}
-
 // final.js (PURE MODULE FILE)
 
 document.addEventListener("DOMContentLoaded", async () => {
-
-  const ENABLED = await isLockEnabled();
-  if (!ENABLED) {
-    console.log("🔓 Lock disabled from GitHub");
-    return;
-  }
-
-  // ⬇️ এখানেই তোমার আগের পুরো lockscreen + Firebase code থাকবে
-});
-
 
   /* 🔐 LOCKSCREEN MODULE UI */
   const lockScreenHtml = `
@@ -110,4 +86,3 @@ document.addEventListener("DOMContentLoaded", async () => {
   silentCheck();
 
 });
-
