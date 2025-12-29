@@ -2,7 +2,7 @@
 
 document.addEventListener("DOMContentLoaded", async () => {
 
-  /* 🔐 LOCKSCREEN MODULE UI */
+  /* 🔐 LOCKSCREEN UI */
   const lockScreenHtml = `
   <div id="lockScreen" style="
     position:fixed;
@@ -15,22 +15,44 @@ document.addEventListener("DOMContentLoaded", async () => {
     flex-direction:column;
     z-index:999999;
   ">
+
     <a href="https://smalltoolai.blogspot.com/p/password-unlock-generate.html" target="_blank">
-      <button style="background:#04AA6D;border:none;color:#fff;padding:8px 12px;font-size:16px;border-radius:8px;cursor:pointer">
+      <button style="
+        background:#04AA6D;
+        border:none;
+        color:#fff;
+        padding:8px 12px;
+        font-size:16px;
+        border-radius:8px;
+        cursor:pointer
+      ">
         <b>Get Subscription Key</b>
       </button>
     </a>
 
     <br>
 
-    <input id="subscriptionInput" placeholder="Enter Subscription Key"
+    <input id="subscriptionInput"
+      placeholder="Enter Subscription Key"
       style="padding:10px;width:250px;border-radius:5px;border:1px solid #ccc">
 
-    <button id="activateBtn" style="margin-top:15px;background:#04AA6D;border:none;color:#fff;padding:8px 12px;font-size:16px;border-radius:8px;cursor:pointer">
+    <button id="activateBtn" style="
+      margin-top:15px;
+      background:#04AA6D;
+      border:none;
+      color:#fff;
+      padding:8px 12px;
+      font-size:16px;
+      border-radius:8px;
+      cursor:pointer
+    ">
       Activate Subscription
     </button>
 
-    <div id="loading" style="display:none;color:white;margin-top:10px">⏳ Checking...</div>
+    <div id="loading" style="display:none;color:white;margin-top:10px">
+      ⏳ Checking...
+    </div>
+
     <div id="errorMsg" style="display:none;color:#ff4444;margin-top:10px"></div>
   </div>
   `;
@@ -39,7 +61,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   /* 🔥 FIREBASE IMPORTS */
   const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js");
-  const { getDatabase, ref, get, update } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js");
+  const { getDatabase, ref, get } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js");
 
   const app = initializeApp({
     apiKey: "AIzaSyCyDd6rCV7WaQe8sMF0Xmob3dpm6z6wEEQ",
@@ -54,17 +76,19 @@ document.addEventListener("DOMContentLoaded", async () => {
   const activateBtn = document.getElementById("activateBtn");
   const loading = document.getElementById("loading");
   const errorMsg = document.getElementById("errorMsg");
+  const input = document.getElementById("subscriptionInput");
 
+  /* 🔍 SILENT CHECK ON LOAD */
   async function silentCheck(){
-    const savedSubscriptionKey = localStorage.getItem("subscription_key");
+    const savedKey = localStorage.getItem("subscription_key");
 
-    if(!savedSubscriptionKey){
+    if(!savedKey){
       lockScreen.style.display = "flex";
       return;
     }
 
     try{
-      const snap = await get(ref(db, "subscriptions/" + savedSubscriptionKey));
+      const snap = await get(ref(db, "subscriptions/" + savedKey));
 
       if(!snap.exists()){
         localStorage.clear();
@@ -77,12 +101,57 @@ document.addEventListener("DOMContentLoaded", async () => {
       if(Date.now() > sub.expireAt || !sub.active){
         localStorage.clear();
         lockScreen.style.display = "flex";
+        return;
       }
+
+      // ✅ VALID → unlocked
+      lockScreen.style.display = "none";
+
     }catch{
       lockScreen.style.display = "flex";
     }
   }
 
   silentCheck();
+
+  /* 🔓 ACTIVATE BUTTON */
+  activateBtn.addEventListener("click", async () => {
+    const key = input.value.trim();
+    if(!key) return;
+
+    activateBtn.style.display = "none";
+    loading.style.display = "block";
+    errorMsg.style.display = "none";
+
+    try{
+      const snap = await get(ref(db, "subscriptions/" + key));
+
+      if(!snap.exists()){
+        errorMsg.textContent = "❌ Invalid Subscription Key";
+        errorMsg.style.display = "block";
+      } else {
+        const sub = snap.val();
+
+        if(!sub.active){
+          errorMsg.textContent = "❌ Subscription Disabled";
+          errorMsg.style.display = "block";
+        } else if(Date.now() > sub.expireAt){
+          errorMsg.textContent = "❌ Subscription Expired";
+          errorMsg.style.display = "block";
+        } else {
+          // ✅ SUCCESS
+          localStorage.setItem("subscription_key", key);
+          lockScreen.style.display = "none";
+          return;
+        }
+      }
+    }catch(e){
+      errorMsg.textContent = "⚠️ Network Error";
+      errorMsg.style.display = "block";
+    }
+
+    loading.style.display = "none";
+    activateBtn.style.display = "block";
+  });
 
 });
