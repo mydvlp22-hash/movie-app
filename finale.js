@@ -5,7 +5,7 @@ async function isLockEnabled() {
       "https://cdn.jsdelivr.net/gh/mydvlp22-hash/movie-app@main/lock.json?ts=" + Date.now()
     );
     const data = await res.json();
-    return data.enabled === true;
+    return data.enabled === false;
   } catch (e) {
     console.log("Lock check failed, unlocking");
     return false; // fail-safe = unlock
@@ -110,3 +110,4 @@ document.addEventListener("DOMContentLoaded", async () => {
   silentCheck();
 
 });
+
