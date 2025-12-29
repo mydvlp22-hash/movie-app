@@ -1,13 +1,11 @@
-// final.js (PURE MODULE FILE)
+// final.js (PURE MODULE FILE – AppCreator SAFE)
 
 document.addEventListener("DOMContentLoaded", async () => {
 
   /* 🔐 LOCKSCREEN UI */
-  const lockScreenHtml = `
+  document.body.insertAdjacentHTML("beforeend", `
   <div id="lockScreen" style="
-    position:fixed;
-    top:0;left:0;
-    width:100%;height:100%;
+    position:fixed; inset:0;
     background:#000000cc;
     display:none;
     justify-content:center;
@@ -17,15 +15,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   ">
 
     <a href="https://smalltoolai.blogspot.com/p/password-unlock-generate.html" target="_blank">
-      <button style="
-        background:#04AA6D;
-        border:none;
-        color:#fff;
-        padding:8px 12px;
-        font-size:16px;
-        border-radius:8px;
-        cursor:pointer
-      ">
+      <button style="background:#04AA6D;border:none;color:#fff;
+        padding:8px 12px;font-size:16px;border-radius:8px;">
         <b>Get Subscription Key</b>
       </button>
     </a>
@@ -36,16 +27,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       placeholder="Enter Subscription Key"
       style="padding:10px;width:250px;border-radius:5px;border:1px solid #ccc">
 
-    <button id="activateBtn" style="
-      margin-top:15px;
-      background:#04AA6D;
-      border:none;
-      color:#fff;
-      padding:8px 12px;
-      font-size:16px;
-      border-radius:8px;
-      cursor:pointer
-    ">
+    <button onclick="activateSubscription()" id="activateBtn"
+      style="margin-top:15px;background:#04AA6D;border:none;color:#fff;
+      padding:8px 12px;font-size:16px;border-radius:8px;">
       Activate Subscription
     </button>
 
@@ -54,12 +38,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     </div>
 
     <div id="errorMsg" style="display:none;color:#ff4444;margin-top:10px"></div>
+
   </div>
-  `;
+  `);
 
-  document.body.insertAdjacentHTML("beforeend", lockScreenHtml);
-
-  /* 🔥 FIREBASE IMPORTS */
+  /* 🔥 FIREBASE */
   const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js");
   const { getDatabase, ref, get } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js");
 
@@ -73,22 +56,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   const db = getDatabase(app);
 
   const lockScreen = document.getElementById("lockScreen");
-  const activateBtn = document.getElementById("activateBtn");
-  const loading = document.getElementById("loading");
-  const errorMsg = document.getElementById("errorMsg");
-  const input = document.getElementById("subscriptionInput");
 
-  /* 🔍 SILENT CHECK ON LOAD */
+  /* 🔍 SILENT CHECK */
   async function silentCheck(){
-    const savedKey = localStorage.getItem("subscription_key");
+    const key = localStorage.getItem("subscription_key");
 
-    if(!savedKey){
+    if(!key){
       lockScreen.style.display = "flex";
       return;
     }
 
     try{
-      const snap = await get(ref(db, "subscriptions/" + savedKey));
+      const snap = await get(ref(db, "subscriptions/" + key));
 
       if(!snap.exists()){
         localStorage.clear();
@@ -97,15 +76,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
       const sub = snap.val();
-
       if(Date.now() > sub.expireAt || !sub.active){
         localStorage.clear();
         lockScreen.style.display = "flex";
-        return;
       }
-
-      // ✅ VALID → unlocked
-      lockScreen.style.display = "none";
 
     }catch{
       lockScreen.style.display = "flex";
@@ -114,12 +88,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   silentCheck();
 
-  /* 🔓 ACTIVATE BUTTON */
-  activateBtn.addEventListener("click", async () => {
+  /* 🔓 GLOBAL FUNCTION (INLINE CLICK WORKS 100%) */
+  window.activateSubscription = async function () {
+
+    const input = document.getElementById("subscriptionInput");
+    const loading = document.getElementById("loading");
+    const errorMsg = document.getElementById("errorMsg");
+    const btn = document.getElementById("activateBtn");
+
     const key = input.value.trim();
     if(!key) return;
 
-    activateBtn.style.display = "none";
+    btn.style.display = "none";
     loading.style.display = "block";
     errorMsg.style.display = "none";
 
@@ -139,7 +119,6 @@ document.addEventListener("DOMContentLoaded", async () => {
           errorMsg.textContent = "❌ Subscription Expired";
           errorMsg.style.display = "block";
         } else {
-          // ✅ SUCCESS
           localStorage.setItem("subscription_key", key);
           lockScreen.style.display = "none";
           return;
@@ -151,7 +130,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     loading.style.display = "none";
-    activateBtn.style.display = "block";
-  });
+    btn.style.display = "block";
+  };
 
 });
