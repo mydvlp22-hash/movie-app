@@ -24,20 +24,20 @@ document.addEventListener("DOMContentLoaded", async () => {
             background:#04AA6D;
             border:none;
             color:white;
-            padding:8px 10px;
+            padding:10px 20px;
             font-size:16px;
             border-radius:8px;
             width:250px;
             cursor:pointer;
-          "><b>Get Password</b></button>
+          "><b>Get Subscribe Key</b></button>
         </a>
       </center>
 
       <br>
 
-      <input id="passInput" type="text" placeholder="Enter Password"
+      <input id="passInput" type="text" placeholder="Enter Subscribe Key"
         style="
-          padding:10px;
+          padding:10px 20px;
           width:250px;
           border-radius:5px;
           border:1px solid #ccc;
@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       <button id="unlockBtn"
         style="
           margin-top:15px;
-          padding:7px 20px;
+          padding:10px 20px;
           font-size:16px;
           color:white;
           background:red;
@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           width:250px;
           cursor:pointer;
         ">
-        Unlock Now
+        Activate Subscribe
       </button>
 
       <div id="loading"
