@@ -6,19 +6,19 @@
       "src": "https://rawcdn.githack.com/mydvlp22-hash/movie-app/refs/heads/main/loho.png",
       "type": "image/png",
       "sizes": "192x192",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "https://rawcdn.githack.com/mydvlp22-hash/movie-app/refs/heads/main/loho.png",
       "type": "image/png",
       "sizes": "512x512",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "https://rawcdn.githack.com/mydvlp22-hash/movie-app/refs/heads/main/flash.jpg",
-      "type": "image/jpg",
-      "sizes": "940x1672",
-      "purpose": "any maskable"
+      "src": "https://rawcdn.githack.com/mydvlp22-hash/movie-app/refs/heads/main/loho.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
     }
   ],
   "start_url": "/?utm_source=pwa",
@@ -26,5 +26,14 @@
   "background_color": "#000000",
   "display": "standalone",
   "orientation": "portrait",
-  "theme_color": "#000000"
+  "theme_color": "#000000",
+  "screenshots": [
+    {
+      "src": "https://rawcdn.githack.com/mydvlp22-hash/movie-app/refs/heads/main/flash.jpg",
+      "type": "image/jpg",
+      "sizes": "940x1672",
+      "form_factor": "narrow",
+      "label": "Movie App Flash Loading Screen"
+    }
+  ]
 }
